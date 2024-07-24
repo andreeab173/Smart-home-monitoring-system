@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% if title %}
+        <title>{{ title }} - PS2N</title>
+    {% else %}
+        <title>IDK</title>
+    {% endif %}
+    <script src="https://unpkg.com/hyperscript@2.3.0"></script>
+    <script>
+        function updateTemperature() {
+            fetch('/get_temperature')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('temperature').textContent = "Temperature: " + data + " °Celsius";
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        updateTemperature();
+        setInterval(updateTemperature, 1000);
+    </script>
+</head>
+<body style="background-color: #f0f8ff; font-family: Arial, sans-serif; color: #333;">
+    <h1 style="color: #0056b3;">Bine ati venit pe site-ul nostru!</h1>
+    <h2 style="color: #FF0000;">GLORIA IS</h2>
+    <form action="/post_led" method="post">
+        <button type="submit" name="action" value="on" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Aprinde bec</button>
+        <button type="submit" name="action" value="off" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Stinge bec</button>
+    </form>
+
+    <p>LED State: {% if cloud_led_state == 1 %}<span style="color: green;">ON</span>{% else %}<span style="color: red;">OFF</span>{% endif %}</p>
+    <div id="temperature" style="font-size: 18px;">Temperatura: {{ temperature }} in °Celsius</div>
+
+    <h1 style="color: #0056b3;">Mesaj spre microcontroler</h1>
+    <form action="/send_messages" method="post">
+        <input type="text" name="message" placeholder="Introduceti mesaj..." style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Trimite</button>
+    </form>
+    <form action="/clear_messages" method="post">
+        <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Curata mesajele</button>
+    </form>
+
+    <h2 style="color: #0056b3;">Lista mesaje:</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        {% for message in messages %}
+        <tr>
+            <td style="border: 1px solid black; padding: 15px; text-align: left;">{{ message }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
